@@ -7,7 +7,10 @@
   <title>destructure-assignment</title>
 </head>
 <body>
-<script>
+<script type="module">
+  // import a,{age} from './module/index.js'
+  // console.log(age)
+
   window.onload = function () {
     // 数据解构
     let [a, b, c] = [5, 6, 8];
@@ -143,6 +146,111 @@
   // 对象的...
   let {x,y,...z} = {x:1, y:2, a:3, b:4}
   console.log(x,y,z)
+
+  /* Promise:解决异步回调
+  */
+  new Promise(function (resolve, reject){
+    if(true) {
+      resolve('resolved')
+    } else {
+      reject('rejected')
+    }
+  })
+  .then(res => {
+    console.log(res)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+  // Promise.all()
+  let p1 = Promise.resolve('aaa')
+  let p2 = Promise.resolve('bbb')
+  let p3 = Promise.resolve('ccc')
+  Promise.all([p1,p2,p3])
+  .then(res => {
+    console.log(res)
+  }).catch(error => {
+    console.log(error)
+  })
+
+  /*  
+  * 模块化：
+  * Commonjs => require('http') 主要服务端nodeJs
+  * AMD
+  * CMD
+  * 服务端和客户端模块规范：（注意：需要在服务器环境）
+  * import {xx} from '...'
+  * 1):如何定义模块化:export
+  * 2):如何使用：
+  *   import
+  *   import './module/index.js'
+  *   import {a as name} from '...'
+  *   import特点：
+  *     a）：import模块只导入一次
+  *     b）：路径可以是相对也可以是绝对路径
+  *     c) ：有提升效果，import会自动提升到顶部，首先执行
+  *     d）：动态加载模块 import('...').then(fn).catch(fn)(返回值是个promise对象，按需加载所需内容)
+  * 使用模块：
+  *  <script type="module">
+  */
+
+
+  /* 类的首字母大写，这是规范
+  *  1）：类
+  *   class Person{}或者const Person = class {}
+  *   注意：类class没有提升功能
+  *  2）：类的setter和getter函数
+  *  3) ：类的静态方法
+  *     static fn(){}
+  */
+  let name22 = 'tiny'
+  class Person {
+    constructor (name, age) {
+      console.log(`构造函数执行了,${name},${age}`)
+      this.name = name
+      this.age = age
+    }
+    showName() {
+      console.log('parent showName')
+      return `name is: ${this.name}`
+    }
+    showAge() {
+      return `age is: ${this.age}`
+    }
+    [name22]() {
+      return `this is you name...`
+    }
+    set aValue(value) {
+      console.log(`set attribute of a ,the value is: ${value}`)
+    }
+    get aValue() {
+      return 'value of a !'
+    }
+    // 静态方法 调用方式Person.staticFn()
+    static staticFn() {
+      return 'this is methods of static !'
+    }
+  }
+  let p11 = new Person('tiny.jiao', '88')
+  console.log(p11.showName(), p11.showAge(), p11.tiny())
+  p11.aValue = 'guizhou'
+  console.log(p11.aValue)
+  console.log(Person.staticFn())
+
+  // 子类Students继承Person
+  class Students extends Person {
+    constructor (args) {
+      super(args)
+    }
+    showName () {
+      // super当对象用时，可用作调用父类的方法
+      super.showName()
+      console.log('child showName')
+    }
+  }
+  let childExample = new Students('jack', 78)
+  console.log('child class:'+Students.staticFn())
+  console.log(childExample.showName())
 </script>  
 </body>
 </html>
