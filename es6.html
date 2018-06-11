@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>destructure-assignment</title>
+</head>
+<body>
+<script>
+  window.onload = function () {
+    // 数据解构
+    let [a, b, c] = [5, 6, 8];
+    console.log(a, b, c)
+
+    // json解构
+    let json = {
+      name: 'tiny',
+      age: '50',
+      job: 'FE'
+    }
+    let {name, age, job} = json
+    console.log(name, age, job)
+
+    // 通过解构设置默认值
+    let [aa, bb, cc ='nullEvalue'] = [1, 2]
+    console.log(aa, bb, cc)
+    
+    // 解构赋值设置变量
+    let inFormation = {
+      height: '174cm',
+      weight: '60kg'
+    }
+    let {height:h, weight:w} = inFormation
+    console.log(h,w)
+    
+    // 字符串模板
+    let inf = `I am ${name},My age is ${age}, my job is ${job}`
+    console.log(inf)
+
+    /**
+    * 字符串查找:str.includes('str')=>trye/false
+    * 替代str.indexOf('str')=>str的index
+    * str.startsWith('str')
+    * str.endsWith('str')
+    * str.repeat(次数)
+    * str.padStart(字符串长度，填充的内容)
+    * str.padEnd(字符串长度，填充的内容)
+    */
+    let str = 'hello world !'
+    console.log(str.includes('hello'))//true
+    let province = 'shanghai'
+    console.log(province.padStart(10, 'X'))//XXshanghai
+
+    /* 
+    * 扩展运算符，Rest运算符 (...):展开，收起来
+    */
+    let arr = ['apple', 'lianxiang', 'huawei', 'mi']
+    console.log(...arr) //apple lianxiang huawei mi
+
+    function restFn(a,b,...c) {
+      console.log(a,b,c)
+    }
+    restFn(1,2,3,4,5,5)
+
+    // 复制数组
+    let arr11 = [9, 20, 30] 
+    let arrcopy = [...arr11]
+    console.log(arrcopy)
+
+    let str11 = 'I am jiaoRengui'
+    console.log(Array.from(str11))
+
+    /* 
+    * Function
+    * 函数参数的默认值就相当于定义函数，不能再使用let,const声明
+    * 1: 箭头函数里没有arguments,用'...'
+    * 2: 箭头函数不能当构造函数
+    */
+    // function 默认参数
+    function show(a = 'jiao', b = 'guizhou') {
+      console.log(a, b)
+    }
+    function showInfor({ a = 'wu', b = 'yunnan' } = {}) {
+      console.log(a, b)
+    }
+    show()
+    showInfor({ a: 'wang', b: 'shanghai' })
+    showInfor({ a: 'wang' })
+    showInfor()
+
+    /* 数组
+    * arr.forEach(function(value,index,entries){})
+    * arr.map(function(value,index,entries){return ...})
+    * arr.filter(function(value,index,entries){return ...})
+    * arr.some(function(value,index,entries){return ...})
+    * arr.every(function(value,index,entries){return ...})
+    * arr.reduce(function(value,index,entries){return ...})
+    */
+    // for ... of
+    let foot = ['apple', 'orange', 'tomato']
+    for(let value of foot) {
+      console.log(value)
+    }
+    // Array.from()将类数组（有length）转为数组
+    function araryFrom() {
+      console.log(Array.from(arguments))
+    }
+    araryFrom(1,2,3)
+    // Array.of()将一组值转为数组
+    let arr22 = Array.of('apple','orange','gogo')
+    console.log(arr22)
+    // arr.find()查找，查找符合条件的第一个成员，没找到返回undefined
+    // arr.findIndex()查找位置，没找到返回-1
+    // arr.fill('value',startIndex,endIndex)填充
+
+    /* 
+    * 对象
+    * Object.keys()
+    * Object.values()
+    * Object.entries()
+    * Object.is()
+    * Object.assign()
+    */
+    // 对象的简介语法
+    let name11 = 'Romiuo'
+    let age11 = '90'
+    let json11= {
+      name11,
+      age11,
+      // 不能使用箭头函数
+      show11() {
+        return this.name11
+      }
+    }
+    console.log(json11.show11())
+  } 
+  // Object.is()比较两个值是否相等
+  console.log(Object.is(NaN, NaN))//true
+  console.log(Object.is(+0, -0))//false
+
+  // Object.assign()用来复制一个对象和合并参数
+  // 对象的...
+  let {x,y,...z} = {x:1, y:2, a:3, b:4}
+  console.log(x,y,z)
+</script>  
+</body>
+</html>
