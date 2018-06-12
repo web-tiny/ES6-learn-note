@@ -7,6 +7,7 @@
   <title>destructure-assignment</title>
 </head>
 <body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="module">
   // import a,{age} from './module/index.js'
   // console.log(age)
@@ -251,6 +252,191 @@
   let childExample = new Students('jack', 78)
   console.log('child class:'+Students.staticFn())
   console.log(childExample.showName())
+
+  /*  新增加的数据类型：symbol
+  *     1):不能用new
+  *     2):Symbol()返回一个唯一的值，可以当做一个key，定义一些私有东西
+  *     3):symbol是一个基本数据类型
+  *     4):如果symbol作为key，用for in循环，遍历不了
+  */
+  let symbolValue = Symbol('symbolValue')
+  console.log(symbolValue)
+  console.log(typeof symbolValue)
+  let symbolJson = {
+    a: 'address',
+    b: 'phone',
+    [symbolValue]: 'name'
+  }
+  for (let key in symbolJson){
+    console.log(key) //a b
+  }
+
+  /*  generator函数:
+      作用：
+  *     1：生成器
+  *     2：解决异步深度嵌套的问题，
+  *   语法：
+  *     function * show(){
+  *         yield ...
+  *     }
+  */
+  function * geneFn(){
+    yield 'welcome'
+    yield 'to'
+    return 'hello'
+  }
+  let geneValue= geneFn();
+  // 调用，手动调用
+  console.log(geneValue.next()) // {value: "welcome", done: false}
+  console.log(geneValue.next()) // {value: "to", done: false}
+  console.log(geneValue.next()) // {value: "hello", done: true}
+
+  for(let value of geneValue) {
+    console.log(value)
+  }
+  // 配合解构使用
+  let [aa,bb,cc] = geneFn();
+  console.log(aa,bb,cc) // welcome to undefined
+  // 配合扩展运算符使用
+ console.log([...geneFn()]) // ["welcome", "to"]
+ console.log(Array.from(geneFn())) // ["welcome", "to"]
+  //  generator在ajax时候的使用
+  function * geneAxios(){
+    let val = yield 'value'
+    yield axios.get(`https://github.com/web-tiny`)
+  }
+  let geneAxiosValue = geneAxios()
+  let userName = geneAxiosValue.next().value
+  geneAxiosValue.next(userName).value.then(res => {
+    console.log(res.data)
+  })
+
+  /* async/await:
+  *  async.js
+  *   1):await只能放在async函数中
+  *   2):async函数返回promise对象
+  *   3):await后面可以是promise对象，也可以是数字，字符串，boolean
+  *   4):只要await语句后面的Promise状态变成reject,整个async函数会中断执行
+  */
+
+ // async函数返回promise对象
+ async function asyncFn(){
+  //  return 'welcome'
+  // throw new Error('error')
+  await Promise.reject('出问题了')
+ }
+ asyncFn().then(res => {
+   console.log(res) // welcome
+ }).catch(error => {
+   console.log(error)
+ })
+
+ /*  数据结构
+ *   数组/json/二叉树
+ *   Set数据结构：
+ *      1):类似数组，但是不能有重复的值
+ *      2):用法：new Set([])
+ *      3):set数据结构中keys和values相等
+ *      4):用作数组去重[...new Set(arr)]
+ *    WeakSet({})
+ *      经实践确认，往初始里添加东西是不行的，得通过add方法添加
+ *      没有size，存储json，不靠谱
+ */
+ let setValue = new Set()
+//  setValue.add('a') // add
+//  setValue.add('b')
+//  setValue.add('c')
+//  setValue.add('d')
+ setValue.add('a').add('b').add('c').add('d')
+ console.log(setValue)
+ //setValue.delete('b') // delete
+ console.log(setValue)
+ console.log(setValue.has('b')) // 检查
+ console.log(setValue.size) // 属性
+ //setValue.clear() // 清空
+ console.log(setValue) 
+//  循环 for... of...
+for(let value of setValue){
+  console.log(value)  // a b c d
+}
+for(let value of setValue.values()){
+  console.log(value)  // a b c d
+}
+for(let key of setValue.keys()){
+  console.log(key)  // a b c d
+}
+for(let [k,v] of setValue.entries()){
+  console.log(k,v)  // a a b b c c d d
+}
+
+let wSet = new WeakSet()
+let wsJson = {
+  'a':'1',
+  'b':'2',
+  'c':'3',
+  'd':'4',
+  'e':'5'
+}
+wSet.add(wsJson)
+console.log(wSet)
+
+/**
+ * Map: 
+ *  类似json，但是json的键只能是字符串
+ *  map的key可以是任意类型
+ * 
+ * let map = new Map();
+ * map.set(key,value)
+ * map.get(key)
+ * map.delete(key)
+ * map.has(key)
+ * map.clear()
+ * for(let value of map){}
+ * for(let value of map.values()){}
+ * for(let key of map.keys()){}
+ * for(let [key,value] of map.entries()){}
+ */
+  let map = new Map();
+  map.set('name', 'tiny')
+  console.log(map)
+  console.log(map.get('name'))
+
+  /**
+   * 数值变化
+   * 二进制（binary）：0b011
+   * 八进制（Octal）：0o011
+   * Number.isNaN()
+   * Nunber.isFinite() 判断是不是数字
+   * Nunber.isInteger() 判断是不是整数
+   * Number.parseInt()
+   * Number.parseFloat()
+   * Number.isSafeInteger() // 判断是不是安全整数
+   * Number.MAX_SAFE_INTEGER  最大安全整数
+  */
+
+  /**
+   * 安全整数：-(2^53-1)包含到(2^53-1)包含
+   * 
+   * 
+   */
+  let safeInt = 2 ** 54
+  console.log(Number.isSafeInteger(safeInt)) //false
+  console.log(Number.MAX_SAFE_INTEGER) // 最大安全整数
+
+  /**
+   * Math.abs()
+   * Math.sqrt()
+   * Math.sin()
+   * Math.trunc() 截断（只保留整数部份）
+   * Math.sign() 判断整数，负数，0 其他值返回NaN
+   * Math.cbrt() 计算立方根
+   */
+  console.log(Math.trunc(4.6)); // 4
+  console.log(Math.sign(60)); // 1
+  console.log(Math.sign(-20));// -1
+  console.log(Math.sign(0)); // 0
+  console.log(Math.cbrt(27)); // 3
+  
 </script>  
 </body>
 </html>
