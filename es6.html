@@ -437,6 +437,170 @@ console.log(wSet)
   console.log(Math.sign(0)); // 0
   console.log(Math.cbrt(27)); // 3
   
+  /*  ES2018(ES9)
+  */
+  // 命名捕获 语法：(?<>)
+  let strTime = '2018-06-13'
+  let reg = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/
+  console.log(strTime.match(reg))
+  let {year, month, day} = strTime.match(reg).groups
+  console.log(year, month, day) // 2018 06 13
+
+  // 反向引用命名捕获 语法：\k<名字>
+  // let reg11 = /^(?<Tiny>Hello)-\k<Tiny>-\1$/
+  let reg11 = /^(?<Tiny>Hello)-\1-\1$/
+  let str22 = 'Hello-Hello-Hello'
+  let str33 = 'Hello-Hello'
+  console.log(reg11.test(str22))
+  console.log(reg11.test(str33))
+  // 替换:语法 $<名字>
+  // 与replace结合使用
+  strTime = strTime.replace(reg, '$<year>/$<month>/$<day>')
+  console.log(strTime)
+
+  /*  dotAll模式 '.'匹配所有的真正的实现，在ES8之前不包括\n
+  *   let reg = /\w+/s
+  */
+  let reg44 = /^\w+.\w+$/s
+  let str44 = 'hello\ntiny'
+  console.log(reg44.test(str44)) // true
+
+  /* 标签函数
+  *  不知有什么用处
+  */
+  function flagFn(args){
+    // console.log(args)
+    return args
+  }
+  console.log(flagFn`hello`) // ["hello", raw: Array(1)]
+
+  /*  proxy：代理(扩展对象的一些功能)，是设计模式中的代理模式
+  *   作用：
+  *      如vue中用作拦截
+  *      预警，上报，扩展，统计，增强对象等等
+  *   语法：
+  *      new Proxy(target,handler)
+  *      handle: {
+  *         set(){} 设置的时候做什么
+  *         get(){} 获取的时候做什么
+  *         deleteProperty(){}
+  *         has(){}  是否有
+  *         apply(){}
+  *         ...
+  *      }
+  */
+  let objProxy = {
+    name: 'proxyValue'
+  }
+
+  let newObj = new Proxy(objProxy,{
+    get(target,property){
+      if(property in target){
+        return target[property]
+      } else {
+        return `^_^+${property}属性不在此对象上`
+      }
+    }
+  })
+  console.log(objProxy.name)
+  console.log(objProxy.age)
+
+  // Proxy实例
+  const DOM = new Proxy({}, {
+    get(target, property){
+      return function(attr = {}, ...children) {
+        console.log(attr, children)
+        const el = document.createElement(property)
+        
+        // add attribute
+        for(let key of Object.keys(attr)){
+          el.setAttribute(key, attr[key])
+        }
+        // add child element
+        for(let child of children) {
+          if(typeof child == 'string') {
+            child = document.createTextNode(child)
+          }
+          el.appendChild(child)
+        }
+        return el
+      }
+    }
+  })
+  let oDiv = DOM.div(
+    {id:'div1'},'i am div1','hello div',
+    DOM.a({href: 'http://www.baidu.com'}, 'click here'),
+  )
+  window.onload = function () {
+    document.body.appendChild(oDiv)
+  }
+
+  /*  set(),设置，拦截
+  */
+  let objSet = new Proxy({},{
+    set(target, property, value) {
+      if (property == 'age') {
+        if (!Number.isInteger(value)) {
+          throw new TypeError(`the age must be a Integer`)
+        }
+        if (value > 200) {
+          throw new RangeError(`age biggest, and it must be less 200`)
+        }
+      }
+      target[property] = value
+    }
+  })
+  // objSet.name = 'tiny'
+  // objSet.age = 100
+  // console.log(objSet)
+
+  /*  Proxy中的delete/has
+  */
+  let jsonDelete = {
+    a: 'address',
+    b: 'name'
+  }
+  let objDelete = new Proxy(jsonDelete, {
+    deleteProperty(target, property) {
+      console.log(`you will delete ${property} attributte`)
+      delete target[property]
+    },
+    has(target, property) {
+      return property in target
+    }
+  })
+  console.log('a' in objDelete)
+  // delete objDelete.b
+  console.log(objDelete)
+
+  /*  Proxy中的apply:拦截函数
+  */
+  function applyFn() {
+    return 'i am function'
+  }
+  let objApply = new Proxy(applyFn, {
+    apply(){
+      return 'function ?'
+    }
+  })
+  console.log(objApply()) // function ?
+
+  /* Reflect 反射
+  *   Reflect.apply(调用的函数，this指向，参数数组)
+  *   通过Reflect对象拿到语言内部的东西
+  *   'assign' in Object -> Reflect.has(Object, 'assign')
+  */
+  function reflectFn (a, b) {
+    return a + b
+  }
+  let objReflect = new Proxy(reflectFn, {
+    apply(target, context, args) {
+      return Reflect.apply(...arguments)
+    }
+  })
+  console.log(objReflect(4,6))
+  let reflectapllyValue = Reflect.apply(Math.ceil, null, [9.6])
+  console.log(reflectapllyValue)
 </script>  
 </body>
 </html>
